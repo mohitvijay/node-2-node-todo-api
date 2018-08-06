@@ -8,6 +8,7 @@ let { Users } = require('./models/user');
 
 var app = express();
 
+const port = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.post('/todos', (req, res) => {
     // let todo = new Todo({
@@ -57,6 +58,6 @@ app.get('/todos/:id', (req, res) => {
         res.send(todo);
     })
 })
-app.listen(3000, () => {
-    console.log('Server is up on port 3000');
+app.listen(port, () => {
+    console.log(`Server is up on port ${port}`);
 })
