@@ -8,6 +8,7 @@ const { ObjectID } = require('mongodb');
 let { mongoose } = require('./db/mongoose');
 let { Todo } = require('./models/todo');
 let { Users } = require('./models/user');
+let {authenticate} = require('./middleware/authenticate');
 
 var app = express();
 
@@ -54,7 +55,7 @@ app.get('/todos/:id', (req, res) => {
         }
         res.send({ todo });
     }).catch((e) => {
-        res.status(400).send();
+        res.status(400).send(e);
     });
 
     // Todo.findById(id).then((todo) => {
@@ -106,13 +107,19 @@ app.post('/users', (req, res) => {
     let body = _.pick(req.body, ['email', 'password']);
     let user = new Users(body);
 
-    user.save().then((user) => {
+    user.save().then(() => {
         return user.generateAuthToken();
     }).then((token) => {
         res.header('x-auth', token).send(user);
     }).catch((e) => {
         res.status(400).send(e);
     });
+});
+
+
+app.get('/users/me', authenticate, (req, res) => {
+    res.send(req.user);
+
 });
 
 app.listen(port, () => {
